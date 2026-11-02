@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Transaction {
+  id        String   @id @default(uuid())
+  type      String // "INCOME" or "EXPENSE"
+  amount    Float
+  category  String
+  date      DateTime
+  note      String?
+  createdAt DateTime @default(now())
+}
+
+model Stock {
+  id        String   @id @default(uuid())
+  ticker    String   @unique // e.g., "AAPL"
+  shares    Float // Allow fractional shares
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
