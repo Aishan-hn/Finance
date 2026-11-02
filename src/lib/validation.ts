@@ -10,6 +10,11 @@ const positiveNumber = (label: string) =>
 
 export const transactionSchema = z.object({
   type: z.enum(["INCOME", "EXPENSE"]),
+  title: z
+    .string()
+    .trim()
+    .min(1, "Title is required")
+    .max(100, "Title is too long"),
   amount: positiveNumber("Amount"),
   category: z
     .string()

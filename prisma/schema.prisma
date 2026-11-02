@@ -10,6 +10,7 @@ datasource db {
 model Transaction {
   id        String   @id @default(uuid())
   type      String // "INCOME" or "EXPENSE"
+  title     String? // Null on transactions added before titles existed
   amount    Float
   category  String
   date      DateTime

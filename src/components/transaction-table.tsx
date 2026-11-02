@@ -50,6 +50,7 @@ export function TransactionTable({
         <TableHeader>
           <TableRow>
             <TableHead>Date</TableHead>
+            <TableHead>Title</TableHead>
             <TableHead>Category</TableHead>
             <TableHead>Note</TableHead>
             <TableHead className="text-right">Amount</TableHead>
@@ -62,6 +63,9 @@ export function TransactionTable({
             return (
               <TableRow key={t.id}>
                 <TableCell>{formatDate(t.date)}</TableCell>
+                <TableCell className="max-w-64 truncate font-medium">
+                  {t.title ?? "—"}
+                </TableCell>
                 <TableCell>{t.category}</TableCell>
                 <TableCell className="max-w-64 truncate text-muted-foreground">
                   {t.note}

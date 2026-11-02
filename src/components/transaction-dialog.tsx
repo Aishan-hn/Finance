@@ -29,6 +29,7 @@ import { toDateInput, todayInput } from "@/lib/format";
 export type TransactionRow = {
   id: string;
   type: string;
+  title: string | null;
   amount: number;
   category: string;
   date: Date;
@@ -53,6 +54,7 @@ function TransactionForm({
   onDone: () => void;
 }) {
   const [type, setType] = useState(transaction?.type ?? "EXPENSE");
+  const [title, setTitle] = useState(transaction?.title ?? "");
   const [amount, setAmount] = useState(transaction?.amount.toString() ?? "");
   const [date, setDate] = useState(
     transaction ? toDateInput(transaction.date) : todayInput(),
@@ -84,7 +86,7 @@ function TransactionForm({
   function submit(event: FormEvent) {
     event.preventDefault();
     startTransition(async () => {
-      const input = { type, amount, category, date, note } as Parameters<
+      const input = { type, title, amount, category, date, note } as Parameters<
         typeof createTransaction
       >[0];
       const result = transaction
@@ -101,6 +103,16 @@ function TransactionForm({
 
   return (
     <form onSubmit={submit} className="grid gap-4">
+      <div className="grid gap-2">
+        <Label htmlFor="tx-title">Title</Label>
+        <Input
+          id="tx-title"
+          required
+          maxLength={100}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+      </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="grid gap-2">
           <Label htmlFor="tx-type">Type</Label>
