@@ -2,6 +2,7 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { TriangleAlert } from "lucide-react";
 import { ExpenseChart } from "@/components/expense-chart";
+import { PortfolioTable } from "@/components/portfolio-table";
 import { TransactionTable } from "@/components/transaction-table";
 import {
   Card,
@@ -63,10 +64,14 @@ export default async function DashboardPage({
     db.transaction.findMany({
       orderBy: [{ date: "desc" }, { createdAt: "desc" }],
     }),
-    db.stock.findMany(),
+    db.stock.findMany({ orderBy: { ticker: "asc" } }),
   ]);
   const quotes = await getQuotes(stocks.map((s) => s.ticker));
-  const { total: portfolioValue, missing } = buildHoldings(stocks, quotes);
+  const {
+    holdings,
+    total: portfolioValue,
+    missing,
+  } = buildHoldings(stocks, quotes);
 
   const thisMonth = currentMonthKey();
   const month = isMonthKey(params.month) ? params.month : thisMonth;
@@ -128,6 +133,28 @@ export default async function DashboardPage({
           ) : (
             <p className="py-8 text-center text-sm text-muted-foreground">
               No expenses in {formatMonth(month)}.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex items-center justify-between gap-2">
+          <CardTitle>Portfolio</CardTitle>
+          <Link href="/portfolio" className="text-sm underline">
+            Manage
+          </Link>
+        </CardHeader>
+        <CardContent>
+          {holdings.length > 0 ? (
+            <PortfolioTable
+              holdings={holdings}
+              total={portfolioValue}
+              editable={false}
+            />
+          ) : (
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              No stocks yet.
             </p>
           )}
         </CardContent>

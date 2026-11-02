@@ -153,9 +153,11 @@ function formatChange(change: number | null) {
 export function PortfolioTable({
   holdings,
   total,
+  editable = true,
 }: {
   holdings: Holding[];
   total: number;
+  editable?: boolean;
 }) {
   const [editing, setEditing] = useState<Holding>();
   const [editOpen, setEditOpen] = useState(false);
@@ -173,7 +175,7 @@ export function PortfolioTable({
             <TableHead className="text-right">Day change</TableHead>
             <TableHead className="text-right">Market value</TableHead>
             <TableHead className="text-right">Share of portfolio</TableHead>
-            <TableHead className="w-20" />
+            {editable && <TableHead className="w-20" />}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -209,27 +211,29 @@ export function PortfolioTable({
                   Price unavailable
                 </TableCell>
               )}
-              <TableCell className="text-right">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label={`Edit ${h.ticker}`}
-                  onClick={() => {
-                    setEditing(h);
-                    setEditOpen(true);
-                  }}
-                >
-                  <Pencil aria-hidden />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label={`Delete ${h.ticker}`}
-                  onClick={() => setDeleting(h)}
-                >
-                  <Trash2 aria-hidden />
-                </Button>
-              </TableCell>
+              {editable && (
+                <TableCell className="text-right">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={`Edit ${h.ticker}`}
+                    onClick={() => {
+                      setEditing(h);
+                      setEditOpen(true);
+                    }}
+                  >
+                    <Pencil aria-hidden />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={`Delete ${h.ticker}`}
+                    onClick={() => setDeleting(h)}
+                  >
+                    <Trash2 aria-hidden />
+                  </Button>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>
@@ -239,7 +243,7 @@ export function PortfolioTable({
             <TableCell className="text-right tabular-nums">
               {formatUSD(total)}
             </TableCell>
-            <TableCell colSpan={2} />
+            <TableCell colSpan={editable ? 2 : 1} />
           </TableRow>
         </TableFooter>
       </Table>
