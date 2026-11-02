@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ThemeProvider } from "next-themes";
 import { Nav } from "@/components/nav";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -24,13 +25,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-muted/30">
-        <Nav />
-        <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 px-4 py-6">
-          {children}
-        </main>
-        <Toaster />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Nav />
+          <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 px-4 py-6">
+            {children}
+          </main>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

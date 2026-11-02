@@ -73,7 +73,14 @@ export function ExpenseChart({
             strokeWidth={2}
             isAnimationActive={false}
           />
-          <Tooltip formatter={(value) => formatUSD(Number(value))} />
+          <Tooltip
+            formatter={(value) => formatUSD(Number(value))}
+            contentStyle={{
+              backgroundColor: "var(--popover)",
+              borderColor: "var(--border)",
+            }}
+            itemStyle={{ color: "var(--popover-foreground)" }}
+          />
         </PieChart>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-xs text-muted-foreground">Total</span>
