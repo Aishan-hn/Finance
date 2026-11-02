@@ -23,7 +23,9 @@ There is no test framework or test suite.
 
 The Prisma client is generated into `src/generated/prisma`, which is gitignored and has no postinstall hook. If imports from `@/generated/prisma/client` fail, run `npx prisma generate`.
 
-`DATABASE_URL` in `.env` points at the user's real financial data, so migrations run against it. It is an absolute path outside the repo, deliberately outside OneDrive because syncing a live SQLite file can corrupt it.
+`DATABASE_URL` in `.env` points at the user's real financial data, so migrations run against it. It is an absolute path outside the repo, deliberately outside OneDrive because syncing a live SQLite file can corrupt it. The database file isn't in Git, so copy it before migrating. Never run `prisma migrate reset` or accept a reset prompt from `prisma migrate dev`, because a reset deletes that data.
+
+`prisma.config.ts` calls `process.loadEnvFile()`, so Prisma commands, including `prisma generate`, fail if `.env` doesn't exist.
 
 ## Architecture
 
@@ -35,11 +37,11 @@ The Prisma client is generated into `src/generated/prisma`, which is gitignored 
 
 **Domain logic** in `src/lib/finance.ts` is pure and takes data as arguments. Keep database and network access out of it.
 
-**Prices** (`src/lib/prices.ts`) wrap `yahoo-finance2` with an 8-second timeout and a 15-minute in-memory cache stored on `globalThis` to survive hot reloads. Failed fetches fall back to cached quotes marked `stale`. A ticker with no quote at all is missing from the result, so `buildHoldings` gives it a null value and returns it in `missing`. Callers must show that as a partial total, never as $0.
+**Prices** (`src/lib/prices.ts`) wrap `yahoo-finance2` with an 8-second timeout and a 15-minute in-memory cache stored on `globalThis` to survive hot reloads. `getQuotes` with `force: true` skips the fresh-cache check, which is how the `refreshPrices` action works. Failed fetches fall back to cached quotes marked `stale`. A ticker with no quote at all is missing from the result, so `buildHoldings` gives it a null value and returns it in `missing`. Callers must show that as a partial total, never as $0.
 
 **Prisma 7** uses the `better-sqlite3` driver adapter. The database URL comes from `prisma.config.ts` and the `db.ts` adapter, not from `schema.prisma`.
 
-**UI.** `src/components/ui` holds shadcn components (`base-nova` style, built on `@base-ui/react`, not Radix).
+**UI.** `src/components/ui` holds shadcn components (`base-nova` style, built on `@base-ui/react`, not Radix). Dark mode uses `next-themes`, which sets a `dark` class on `<html>`. The theme is unknown during server rendering, so anything that changes with the theme should use `dark:` CSS variants, not `resolvedTheme`, to avoid a hydration mismatch.
 
 ## Conventions and decisions
 
